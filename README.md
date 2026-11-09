@@ -1,56 +1,65 @@
-# Welcome to your Expo app 👋
+# FitPro — React Native + Firebase
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Projeto Expo / React Native inspirado no PDF de referência: identidade escura, amarelo neon, cartões cinza, textos brancos e navegação inferior.
 
-## Get started
+## Incluído
+- Login e cadastro com e-mail/senha (Firebase Authentication)
+- Recuperação de senha por e-mail
+- Login com Google via OAuth ID token + Firebase Credential
+- Sessão persistida com AsyncStorage
+- Início, Treinos, Progresso e Perfil
+- Cloud Firestore: perfil, treinos e progresso por exercício
+- Rotas protegidas: área principal só aparece com usuário autenticado
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Instalação
+Requer Node.js 20+.
 
 ```bash
-npm run reset-project
+npm install
+npx expo install --fix
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+## Firebase
+1. Crie um projeto em https://console.firebase.google.com/
+2. Registre um aplicativo Web nas configurações do projeto e copie a configuração.
+3. Copie `.env.example` para `.env` e preencha as variáveis `EXPO_PUBLIC_FIREBASE_*`.
+4. Em Authentication > Sign-in method, habilite E-mail/senha e Google.
+5. Crie o Cloud Firestore.
+6. Publique `firestore.rules` nas regras do Firestore.
 
-### Other setup steps
+As variáveis `EXPO_PUBLIC_*` são públicas no app cliente. Nunca coloque chaves privadas, service account ou segredos administrativos nelas.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Google OAuth
+1. Ative o provedor Google no Firebase Authentication.
+2. Configure a tela de consentimento e clientes OAuth no Google Cloud Console.
+3. Crie os clientes Web, Android e iOS com os identificadores do seu aplicativo.
+4. Preencha as variáveis `EXPO_PUBLIC_GOOGLE_*_CLIENT_ID` no `.env`.
+5. Android exige package name e SHA-1 do certificado de assinatura; iOS exige bundle identifier. Ajuste `com.seuprojeto.fitpro` em `app.json` para identificadores reais.
+6. Para testar o login nativo Google, use um development build e siga a configuração atual do Expo/Google. O fluxo depende de credenciais OAuth válidas; não fica funcional só por instalar o pacote.
 
-## Learn more
+## Executar
+```bash
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Dados no Firestore
+```text
+users/{uid}
+  uid, name, email, photoURL, createdAt, updatedAt
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+users/{uid}/workouts/{workoutId}
+  title, durationMinutes, completed, exercises[], createdAt
 
-## Join the community
+users/{uid}/exerciseProgress/{progressId}
+  name, group, gain, sets, createdAt
+```
 
-Join our community of developers creating universal apps.
+As regras restringem leitura e escrita ao próprio usuário autenticado.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Navegação
+Deslogado: Login → Cadastro / Esqueci a senha.
+Logado: Início / Progresso / Treinos / Perfil.
+Ao sair, retorna ao Login automaticamente.
+
+## Antes de publicar
+Os números e cargas iniciais são dados demonstrativos baseados no PDF, não são dados reais do aluno. O botão de registro de evolução é demonstrativo. Crie formulários reais de carga/séries/repetições, política de privacidade, termos, monitoramento e revise as regras antes de produção.
