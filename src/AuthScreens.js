@@ -1,7 +1,5 @@
-
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
-    Alert,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
@@ -11,60 +9,10 @@ import {
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
-import { makeRedirectUri } from 'expo-auth-session';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
 
-import { Button, Field, Heading, Link, Screen } from './UI';
 import { useAuth } from './AuthContext';
 import { C } from './theme';
-
-WebBrowser.maybeCompleteAuthSession();
-
-function GoogleButton() {
-  const { googleLogin } = useAuth();
-  const [busy, setBusy] = useState(false);
-
-  const [request, response, promptAsync] =
-    Google.useIdTokenAuthRequest({
-      clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-      iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-      androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-      redirectUri: makeRedirectUri({ scheme: 'fitpro' })
-    });
-
-  useEffect(() => {
-    (async () => {
-      if (response?.type === 'success') {
-        const token = response.params?.id_token;
-
-        if (!token) {
-          Alert.alert('Google', 'Token não recebido. Confira as credenciais OAuth.');
-          return;
-        }
-
-        try {
-          setBusy(true);
-          await googleLogin(token);
-        } catch (e) {
-          Alert.alert('Falha no Google', e.message);
-        } finally {
-          setBusy(false);
-        }
-      }
-    })();
-  }, [response]);
-
-  return (
-    <Button
-      title="G  Continuar com Google"
-      secondary
-      loading={busy}
-      disabled={!request || busy}
-      onPress={() => promptAsync()}
-    />
-  );
-}
+import { Button, Field, Heading, Link, Screen } from './UI';
 
 function Shell({ children, navigation }) {
   return (
@@ -197,10 +145,6 @@ export function LoginScreen({ navigation }) {
         onPress={submit}
         loading={busy}
       />
-
-      <View style={{ marginTop: 12 }}>
-        <GoogleButton />
-      </View>
 
       <View
         style={{

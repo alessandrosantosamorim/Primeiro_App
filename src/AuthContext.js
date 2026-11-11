@@ -1,7 +1,7 @@
-import React,{createContext,useContext,useEffect,useState} from 'react';
-import {onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,signOut,updateProfile,GoogleAuthProvider,signInWithCredential} from 'firebase/auth';
-import {auth} from './firebase';
-import {ensureProfile} from './data';
+import { createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { ensureProfile } from './data';
+import { auth } from './firebase';
 const Ctx=createContext(null);export const useAuth=()=>useContext(Ctx);
 export function AuthProvider({children}){
  const [user,setUser]=useState(null),[loading,setLoading]=useState(true);
@@ -9,7 +9,6 @@ export function AuthProvider({children}){
  const register=async({name,email,password})=>{const r=await createUserWithEmailAndPassword(auth,email.trim(),password);await updateProfile(r.user,{displayName:name.trim()});await ensureProfile(r.user,name.trim());};
  const login=(email,password)=>signInWithEmailAndPassword(auth,email.trim(),password);
  const resetPassword=email=>sendPasswordResetEmail(auth,email.trim());
- const googleLogin=token=>signInWithCredential(auth,GoogleAuthProvider.credential(token));
  const logout=()=>signOut(auth);
- return <Ctx.Provider value={{user,loading,register,login,resetPassword,googleLogin,logout}}>{children}</Ctx.Provider>;
+ return <Ctx.Provider value={{user,loading,register,login,resetPassword,logout}}>{children}</Ctx.Provider>;
 }
