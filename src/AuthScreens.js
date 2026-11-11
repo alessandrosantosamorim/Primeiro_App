@@ -15,9 +15,9 @@ import { makeRedirectUri } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 
-import { Button, Field, Heading, Link, Screen } from '../components/UI';
-import { useAuth } from '../context/AuthContext';
-import { C } from '../theme';
+import { Button, Field, Heading, Link, Screen } from './UI';
+import { useAuth } from './AuthContext';
+import { C } from './theme';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -197,6 +197,10 @@ export function LoginScreen({ navigation }) {
         onPress={submit}
         loading={busy}
       />
+
+      <View style={{ marginTop: 12 }}>
+        <GoogleButton />
+      </View>
 
       <View
         style={{

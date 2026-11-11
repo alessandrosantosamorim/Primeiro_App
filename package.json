@@ -30,8 +30,5 @@
   "engines": {
     "node": ">=20"
   },
-  "devDependencies": {
-    "@types/react": "~19.3.0",
-    "typescript": "~6.0.3"
-  }
+  "description": "FitPro - aplicativo React Native com Expo e Firebase, desenvolvido em JavaScript puro."
 }

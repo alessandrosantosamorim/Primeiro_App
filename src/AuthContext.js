@@ -1,7 +1,7 @@
 import React,{createContext,useContext,useEffect,useState} from 'react';
 import {onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,sendPasswordResetEmail,signOut,updateProfile,GoogleAuthProvider,signInWithCredential} from 'firebase/auth';
-import {auth} from '../services/firebase';
-import {ensureProfile} from '../services/data';
+import {auth} from './firebase';
+import {ensureProfile} from './data';
 const Ctx=createContext(null);export const useAuth=()=>useContext(Ctx);
 export function AuthProvider({children}){
  const [user,setUser]=useState(null),[loading,setLoading]=useState(true);

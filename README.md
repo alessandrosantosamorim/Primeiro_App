@@ -1,48 +1,70 @@
-# FitPro — React Native + Firebase
+# FitPro — React Native puro (JavaScript) + Expo + Firebase
 
-Projeto Expo / React Native inspirado no PDF de referência: identidade escura, amarelo neon, cartões cinza, textos brancos e navegação inferior.
+Aplicativo mobile FitPro com interface escura, amarelo neon e navegação inferior. O código do aplicativo fica diretamente em `src/`, sem TypeScript e sem Expo Router.
 
-## Incluído
-- Login e cadastro com e-mail/senha (Firebase Authentication)
-- Recuperação de senha por e-mail
-- Login com Google via OAuth ID token + Firebase Credential
-- Sessão persistida com AsyncStorage
-- Início, Treinos, Progresso e Perfil
-- Cloud Firestore: perfil, treinos e progresso por exercício
-- Rotas protegidas: área principal só aparece com usuário autenticado
+## Funcionalidades
+- Cadastro, login e recuperação de senha com Firebase Authentication.
+- Login com Google (opcional; exige configurar os IDs OAuth).
+- Sessão persistida no dispositivo com AsyncStorage.
+- Telas Início, Treinos, Progresso e Perfil.
+- Perfil, treinos e evolução salvos no Cloud Firestore.
+- Navegação protegida: a área principal só aparece após autenticação.
 
-## Instalação
-Requer Node.js 20+.
+## Requisitos
+- Node.js 20 ou superior.
+- Expo Go compatível com a versão do Expo deste projeto, ou development build.
+
+## Instalação e execução
+Na pasta do projeto, execute:
 
 ```bash
 npm install
 npx expo install --fix
-```
-
-## Firebase
-1. Crie um projeto em https://console.firebase.google.com/
-2. Registre um aplicativo Web nas configurações do projeto e copie a configuração.
-3. Copie `.env.example` para `.env` e preencha as variáveis `EXPO_PUBLIC_FIREBASE_*`.
-4. Em Authentication > Sign-in method, habilite E-mail/senha e Google.
-5. Crie o Cloud Firestore.
-6. Publique `firestore.rules` nas regras do Firestore.
-
-As variáveis `EXPO_PUBLIC_*` são públicas no app cliente. Nunca coloque chaves privadas, service account ou segredos administrativos nelas.
-
-## Google OAuth
-1. Ative o provedor Google no Firebase Authentication.
-2. Configure a tela de consentimento e clientes OAuth no Google Cloud Console.
-3. Crie os clientes Web, Android e iOS com os identificadores do seu aplicativo.
-4. Preencha as variáveis `EXPO_PUBLIC_GOOGLE_*_CLIENT_ID` no `.env`.
-5. Android exige package name e SHA-1 do certificado de assinatura; iOS exige bundle identifier. Ajuste `com.seuprojeto.fitpro` em `app.json` para identificadores reais.
-6. Para testar o login nativo Google, use um development build e siga a configuração atual do Expo/Google. O fluxo depende de credenciais OAuth válidas; não fica funcional só por instalar o pacote.
-
-## Executar
-```bash
 npx expo start
 ```
 
+Para abrir no Android, pressione `a` no terminal do Expo ou execute `npm run android`.
+
+## Firebase
+O arquivo `src/firebase.js` já contém a configuração do projeto Firebase que estava no arquivo original. Se quiser usar outro projeto, substitua os valores de `firebaseConfig` pelos dados do aplicativo Web em Firebase Console → Configurações do projeto → Geral.
+
+No Firebase Console:
+1. Em Authentication → Sign-in method, habilite E-mail/senha.
+2. Se quiser login Google, habilite também Google e configure os clientes OAuth.
+3. Crie o Cloud Firestore.
+4. Publique as regras do arquivo `firestore.rules`.
+
+### Login com Google (opcional)
+Configure estas variáveis `EXPO_PUBLIC_` no arquivo `.env`:
+
+```env
+EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=seu-client-id-web
+EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=seu-client-id-android
+EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=seu-client-id-ios
+```
+
+Sem os IDs OAuth, o botão Google ficará indisponível; login por e-mail e senha continua funcionando. Depois de alterar variáveis de ambiente, reinicie o Expo.
+
+As configurações `EXPO_PUBLIC_*` e a chave de API Firebase são incluídas no aplicativo cliente. Não coloque senhas, chaves privadas ou credenciais de service account no app.
+
+## Estrutura do código
+
+```text
+App.js                  # Entrada do Expo
+src/
+  App.js                # Inicialização do aplicativo
+  AuthContext.js        # Estado de autenticação
+  AuthScreens.js        # Login, cadastro e recuperação
+  MainScreens.js        # Início, treinos, progresso e perfil
+  RootNavigator.js      # Navegação e rotas protegidas
+  UI.js                 # Componentes visuais reutilizáveis
+  data.js               # Operações do Firestore
+  firebase.js           # Firebase Auth + Firestore
+  theme.js              # Cores do aplicativo
+```
+
 ## Dados no Firestore
+
 ```text
 users/{uid}
   uid, name, email, photoURL, createdAt, updatedAt
@@ -54,12 +76,4 @@ users/{uid}/exerciseProgress/{progressId}
   name, group, gain, sets, createdAt
 ```
 
-As regras restringem leitura e escrita ao próprio usuário autenticado.
-
-## Navegação
-Deslogado: Login → Cadastro / Esqueci a senha.
-Logado: Início / Progresso / Treinos / Perfil.
-Ao sair, retorna ao Login automaticamente.
-
-## Antes de publicar
-Os números e cargas iniciais são dados demonstrativos baseados no PDF, não são dados reais do aluno. O botão de registro de evolução é demonstrativo. Crie formulários reais de carga/séries/repetições, política de privacidade, termos, monitoramento e revise as regras antes de produção.
+Os números e cargas que aparecem inicialmente são demonstrativos. O botão de registrar evolução também é demonstrativo e pode ser substituído por um formulário real.
